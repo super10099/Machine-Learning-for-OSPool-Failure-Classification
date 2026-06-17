@@ -20,32 +20,32 @@ The actual shape of the tensor is ```e * m * j```
 The e * m slices (historical records) are a series of one-hot encoding of the event logs. Think of each historical records as a finite-state machine and its transitions across time. For the sake of an example, let's have five categorical events, so 0=job submitted, 1=input file transfer, 2=job execute, 3=job on hold, 4=ouput file transfer, 5=terminated, so e=6.
 The primary job has the sequence of events in its event log: 
 ```
-                                                           0 (time=00:01:00)
-                                                           1 (time=00:03:00)
-                                                           2 (time=00:04:00)
-                                                           3 (time=00:05:00)
-                                                           4 (time=00:07:00)
-                                                           2 (time=00:10:00)
-                                                           5 (time=00:13:00)
+ 0 (time=00:01:00)
+ 1 (time=00:03:00)
+ 2 (time=00:04:00)
+ 3 (time=00:05:00)
+ 4 (time=00:07:00)
+ 2 (time=00:10:00)
+ 5 (time=00:13:00)
 ```
 Let m=14, timeframe_len=60, j=2. These means that the state of the job is checked every 60 seconds, with a maximum of 14 samples, and imputation is used to fill in the blanks. After parsing, the tensor of the primary job looks like:  
 
-                                                           | 0 | 1 | 2 | 3 | 4 | 5 |
-                                                           | - | - | - | - | - | - |
-                                                           | 1 | 0 | 0 | 0 | 0 | 0 |
-                                                           | 1 | 0 | 0 | 0 | 0 | 0 |
-                                                           | 0 | 1 | 0 | 0 | 0 | 0 |
-                                                           | 0 | 0 | 1 | 0 | 0 | 0 |
-                                                           | 0 | 0 | 0 | 1 | 0 | 0 |
-                                                           | 0 | 0 | 0 | 1 | 0 | 0 |
-                                                           | 0 | 0 | 0 | 0 | 1 | 0 |
-                                                           | 0 | 0 | 0 | 0 | 1 | 0 |
-                                                           | 0 | 0 | 0 | 0 | 1 | 0 |
-                                                           | 0 | 0 | 1 | 0 | 0 | 0 |
-                                                           | 0 | 0 | 1 | 0 | 0 | 0 |
-                                                           | 0 | 0 | 1 | 0 | 0 | 0 |
-                                                           | 0 | 0 | 0 | 0 | 0 | 1 |
-                                                           | 0 | 0 | 0 | 0 | 0 | 1 |
+| 0 | 1 | 2 | 3 | 4 | 5 |
+| - | - | - | - | - | - |
+| 1 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 1 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 1 | 0 | 0 |
+| 0 | 0 | 0 | 1 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 1 | 0 |
+| 0 | 0 | 0 | 0 | 1 | 0 |
+| 0 | 0 | 0 | 0 | 1 | 0 |
+| 0 | 0 | 1 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 1 |
+| 0 | 0 | 0 | 0 | 0 | 1 |
 
 This process is repeated for j-1 jobs. As mentioned, the first historical record is the job that had gone on hold.
 
